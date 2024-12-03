@@ -13,6 +13,7 @@ import AddMemberForm from "./components/forms/AddMemberForm";
 import AddExpense from "./components/forms/AddExpense";
 import GroupDetails from "./_root/pages/GroupDetails";
 import Settlement from "./components/forms/Settlement";
+import MultiCurrency from "./_root/pages/MultiCurrency";
 import {
   useFriends,
   useGetGroupsActivityById,
@@ -59,6 +60,7 @@ const App = () => {
           <Route path="/groups/:id" element={<GroupDetails />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/add-member/:id" element={<AddMemberForm />} />
+          <Route path="/multicurrency" element={<MultiCurrency />} />
         </Route>
       </Routes>
 

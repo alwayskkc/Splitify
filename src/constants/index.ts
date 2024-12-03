@@ -19,6 +19,11 @@ export const sidebarLinks = [
     route: "/profile",
     label: "Profile",
   },
+  {
+    imgURL: "https://img.icons8.com/?size=48&id=89797&format=png",
+    route: "/multicurrency",
+    label: "Multi Currency",
+  },
 ];
 
 export const bottombarLinks = [
@@ -41,5 +46,10 @@ export const bottombarLinks = [
     imgURL: "https://img.icons8.com/color/48/admin-settings-male.png",
     route: "/profile",
     label: "Profile",
+  },
+  {
+    imgURL: "https://img.icons8.com/?size=48&id=89797&format=png&color=000000",
+    route: "/multicurrency",
+    label: "Multi Currency",
   },
 ];
