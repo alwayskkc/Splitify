@@ -5,7 +5,7 @@
 
 ---
 
-# **📄 SplitWise Clone Installation Guide**
+# **📄 Splitify Clone Installation Guide**
 
 ### 📚 **Table of Contents**
 1. [📥 Clone the Repository](#-1-clone-the-repository)
