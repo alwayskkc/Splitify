@@ -1,3 +1,13 @@
+export interface INewExpense {
+  desc: string;
+  paidBy: string;
+  group: string;
+  Time: string;
+  splitMember: string[];
+  amount: string;
+  currency: string; // Add this line
+}
+
 export type INavLink = {
   imgURL: string;
   route: string;
@@ -25,14 +35,7 @@ export type INewGroup = {
   members: string[];
 };
 
-export type INewExpense = {
-  desc: string;
-  paidBy: string;
-  group: string;
-  Time: string;
-  splitMember: string[];
-  amount: string;
-};
+
 
 export type ISettlement = {
   payerId: string;

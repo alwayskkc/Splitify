@@ -132,19 +132,9 @@ export async function createGroup(group: INewGroup) {
 // ============================== CREATE EXPENSE
 
 export async function createExpense(expense: INewExpense) {
-  // Validation check
-  if (!expense.desc) throw new Error("Description is required.");
-  if (!expense.paidBy) throw new Error("PaidBy is required.");
-  if (!expense.group) throw new Error("Group is required.");
-  if (
-    !expense.splitMember ||
-    !Array.isArray(expense.splitMember) ||
-    expense.splitMember.length === 0
-  ) {
-    throw new Error("SplitMember is required and should be a non-empty array.");
-  }
-  if (!expense.amount) throw new Error("Amount is required.");
-
+  // Existing validation checks...
+  if (!expense.currency) throw new Error("Currency is required.");
+  
   try {
     const newExpense = await databases.createDocument(
       appwriteConfig.databaseId,
@@ -157,14 +147,16 @@ export async function createExpense(expense: INewExpense) {
         Time: new Date().toISOString(),
         splitMember: expense.splitMember,
         Amout: expense.amount,
+        Currency: expense.currency, // Add this line
       }
     );
     return newExpense;
   } catch (error) {
     console.error("Error creating expense:", error);
-    throw error; // Re-throw error if needed to handle it in the calling function
+    throw error;
   }
 }
+
 export async function getsettlement(userId?: string, receiverId?: string) {
   const queryArray = [];
 

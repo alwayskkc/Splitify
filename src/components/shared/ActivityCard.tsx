@@ -58,9 +58,9 @@ const ActivityCard = ({ activity }: UserCardProps) => {
           "{activity.Group.groupName}"
         </span>
       </p>
-      <p>
+      <div>
         <DateDisplay dateTimeString={activity.Time} />
-      </p>
+      </div>
       <p
         className={`${
           isPaidByCurrentUser

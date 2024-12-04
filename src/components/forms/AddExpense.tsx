@@ -27,6 +27,7 @@ const AddExpense = () => {
     id!
   );
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
 
   const form = useForm<INewExpense>({
     resolver: zodResolver(ExpenseValidation),
@@ -37,6 +38,7 @@ const AddExpense = () => {
       Time: new Date().toISOString(), // Set the default value to the current time
       splitMember: [], // Set the default value based on your logic
       amount: "",
+      currency: "USD", // Add this line
     },
   });
 
@@ -86,6 +88,8 @@ const AddExpense = () => {
       paidBy: selectedPaidBy,
       Time: new Date().toISOString(),
       splitMember: selectedMembers,
+      currency: selectedCurrency, // Add this line
+      //currency: value.currency, // Make sure this line is present
     });
 
     if (!newExpense) {
@@ -161,6 +165,32 @@ const AddExpense = () => {
                       </FormItem>
                     )}
                   />
+
+                   {/* Add Currency Selection Field */}
+                    <FormField
+                      control={form.control}
+                      name="currency"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="shad-form_label">Currency</FormLabel>
+                          <FormControl>
+                            <select
+                              {...field}
+                              onChange={(e) => {
+                                field.onChange(e);
+                                setSelectedCurrency(e.target.value);
+                              }}
+                              className="shad-input">
+                              <option value="USD">USD</option>
+                              <option value="EUR">EUR</option>
+                              <option value="GBP">GBP</option>
+                              {/* Add more currency options as needed */}
+                            </select>
+                          </FormControl>
+                          <FormMessage className="shad-form_message" />
+                        </FormItem>
+                      )}
+                    /> 
 
                   {/* Paid By Field (Assuming a select dropdown, replace it with your logic) */}
                   {/* Add your logic for selecting the user */}

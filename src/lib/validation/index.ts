@@ -43,6 +43,7 @@ export const ExpenseValidation = z.object({
     .string()
     .min(1, { message: "Amount is required" })
     .max(10, { message: "Maximum 10 digit." }),
+  currency: z.string().min(3).max(3, { message: "Currency must be a 3-letter code." }),  
 });
 
 export const SettlementValidation = z.object({

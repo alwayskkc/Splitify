@@ -40,11 +40,16 @@ const DateDisplay = ({ dateTimeString }: { dateTimeString: any }) => {
   const formattedDate = formatDate(dateTimeString);
 
   return (
-    <div className="date-container">
-      <div className="date-time">
+  //  <span className="date-container">
+  //     <span className="date-time">
+  //       <span className="formatted-date">{formattedDate}</span>
+  //     </span>
+  //   </span>
+  <span className="date-container">
+      <span className="date-time">
         <span className="formatted-date">{formattedDate}</span>
-      </div>
-    </div>
+      </span>
+    </span>
   );
 };
 
