@@ -22,7 +22,7 @@ export const sidebarLinks = [
   {
     imgURL: "https://img.icons8.com/?size=48&id=89797&format=png",
     route: "/multicurrency",
-    label: "Multi Currency",
+    label: "Currency Converter",
   },
 ];
 
@@ -50,7 +50,7 @@ export const bottombarLinks = [
   {
     imgURL: "https://img.icons8.com/?size=48&id=89797&format=png&color=000000",
     route: "/multicurrency",
-    label: "Multi Currency",
+    label: "Currency Converter",
   },
 ];
 
