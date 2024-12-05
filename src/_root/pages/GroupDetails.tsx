@@ -178,19 +178,7 @@ const GroupDetails = () => {
                   />{" "}
                   Simplify Debt
                 </Button>
-                {/* <Button
-                  className="m-1"
-                  onClick={toggleModal2}
-                  disabled={isLoadingGroup}>
-                  <img
-                    width="24"
-                    height="24"
-                    src="https://img.icons8.com/color/48/delete-forever.png"
-                    alt="delete-forever"
-                  />{" "}
-                  {isLoadingGroup && <Loader />}
-                  {isLoadingGroup ? "Deleting..." : "Delete Group"}{" "}
-                </Button> */}
+                
               </div>
             </div>
 

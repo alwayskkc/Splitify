@@ -2,6 +2,7 @@ import { Models } from "appwrite";
 import { useGetCurrentUser } from "@/lib/react-query/queries";
 import ActivityImage from "./ActivityImage";
 import DateDisplay from "./DateDisplay";
+import CurrencyConverter from "./CurrencyConverter";
 
 type UserCardProps = {
   activity: Models.Document;
@@ -41,9 +42,16 @@ const ActivityCard = ({ activity }: UserCardProps) => {
           <ActivityImage Desc={activity.Desc} Type={"activity"} />
           <p className="text-lg font-bold mb-1 mt-2">&ensp;{activity.Desc}</p>
         </div>
-        <span className="text-blue-500 text-lg font-bold mt-2">
-          &#36;{activity.Amout}
+        <span className="text-blue-500 text-sm font-bold mt-2">
+          {/* &#36;{activity.Amout} */}
+          {activity.Currency} <CurrencyConverter 
+          amount={parseFloat(activity.Amout)}
+          fromCurrency="USD"
+          toCurrency={activity.Currency}
+        />
+         {"  "}≈ {" USD "}{parseFloat(activity.Amout).toFixed(2)}
         </span>
+        
       </div>
       <p>
         Added by{" "}

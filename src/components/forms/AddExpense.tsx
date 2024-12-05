@@ -18,14 +18,14 @@ import { useCreateExpense, useGetGroupById } from "@/lib/react-query/queries";
 import { INewExpense } from "@/types";
 import { useEffect, useState } from "react";
 import { useUserContext } from "@/context/AuthContext";
+import { currencies } from '@/constants';
+import { convertCurrency } from "@/lib/utils";
 
 const AddExpense = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { user } = useUserContext();
-  const { data: GroupData, isLoading: isGroupDataLoading } = useGetGroupById(
-    id!
-  );
+  const { data: GroupData, isLoading: isGroupDataLoading } = useGetGroupById(id!);
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
 
@@ -33,12 +33,12 @@ const AddExpense = () => {
     resolver: zodResolver(ExpenseValidation),
     defaultValues: {
       desc: "",
-      paidBy: user.id, // Set the default value based on your logic
-      group: id, // Set the default value to the group ID
-      Time: new Date().toISOString(), // Set the default value to the current time
-      splitMember: [], // Set the default value based on your logic
+      paidBy: user.id,
+      group: id,
+      Time: new Date().toISOString(),
+      splitMember: [],
       amount: "",
-      currency: "USD", // Add this line
+      currency: "USD",
     },
   });
 
@@ -50,12 +50,12 @@ const AddExpense = () => {
         ? prevMembers.filter((id) => id !== memberId)
         : [...prevMembers, memberId]
     );
-    setIsCheckboxError(false); // Reset error when a checkbox is selected
+    setIsCheckboxError(false);
   };
 
   useEffect(() => {
     form.setValue("splitMember", selectedMembers);
-  }, [selectedMembers]);
+  }, [selectedMembers, form]);
 
   const [selectedPaidBy, setSelectedPaidBy] = useState<string>(user.id);
 
@@ -63,8 +63,7 @@ const AddExpense = () => {
     setSelectedPaidBy(event.target.value);
   };
 
-  const { mutateAsync: createExpense, isLoading: isLoadingCreate } =
-    useCreateExpense();
+  const { mutateAsync: createExpense, isLoading: isLoadingCreate } = useCreateExpense();
 
   const handleSubmit = async (value: INewExpense) => {
     if (
@@ -81,29 +80,46 @@ const AddExpense = () => {
       toast({
         title: `Expense creation failed. Please try again.`,
       });
+      return;
     }
-    const newExpense = await createExpense({
-      ...value,
-      group: id!,
-      paidBy: selectedPaidBy,
-      Time: new Date().toISOString(),
-      splitMember: selectedMembers,
-      currency: selectedCurrency, // Add this line
-      //currency: value.currency, // Make sure this line is present
-    });
 
-    if (!newExpense) {
-      toast({
-        title: `Expense creation failed. Please try again.`,
+    try {
+      // Convert the amount to USD if it's not already in USD
+      let amountInUSD = parseFloat(value.amount);
+      if (selectedCurrency !== "USD") {
+        amountInUSD = await convertCurrency(parseFloat(value.amount), selectedCurrency, "USD");
+      }
+
+      const newExpense = await createExpense({
+        ...value,
+        group: id!,
+        paidBy: selectedPaidBy,
+        Time: new Date().toISOString(),
+        splitMember: selectedMembers,
+        currency: selectedCurrency,
+        amount: amountInUSD.toString(), // Store the amount in USD
       });
-    } else {
+
+      if (!newExpense) {
+        toast({
+          title: `Expense creation failed. Please try again.`,
+        });
+      } else {
+        toast({
+          title: "Expense Added Successfully.",
+          description: "Your expense has been added to the group.",
+        });
+        navigate(`/groups/${id}`);
+      }
+    } catch (error) {
+      console.error("Error creating expense:", error);
       toast({
-        title: "Expense Added Successfully.",
-        description: "Your expense has been added to the group.",
+        title: "Error creating expense",
+        description: "An error occurred while creating the expense. Please try again.",
       });
-      navigate(`/groups/${id}`);
     }
   };
+
 
   return (
     <Form {...form}>
@@ -123,93 +139,77 @@ const AddExpense = () => {
                 </h2>
                 <form
                   onSubmit={form.handleSubmit(handleSubmit)}
-                  className="flex flex-col gap-5 w-full  max-w-5xl text-gray-300">
-                  {/* Description Field */}
+                  className="flex flex-col gap-5 w-full max-w-5xl text-gray-300"
+                >
                   <FormField
                     control={form.control}
                     name="desc"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="shad-form_label">
-                          Description
-                        </FormLabel>
+                        <FormLabel className="shad-form_label">Description</FormLabel>
                         <FormControl>
-                          <Input
-                            type="text"
-                            className="shad-input"
-                            {...field}
-                          />
+                          <Input type="text" className="shad-input" {...field} />
                         </FormControl>
                         <FormMessage className="shad-form_message" />
                       </FormItem>
                     )}
                   />
 
-                  {/* Amount Field */}
                   <FormField
                     control={form.control}
                     name="amount"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="shad-form_label">
-                          Amount
-                        </FormLabel>
+                        <FormLabel className="shad-form_label">Amount</FormLabel>
                         <FormControl>
-                          <Input
-                            type="number"
-                            className="shad-input"
-                            {...field}
-                          />
+                          <Input type="number" className="shad-input" {...field} />
                         </FormControl>
                         <FormMessage className="shad-form_message" />
                       </FormItem>
                     )}
                   />
 
-                   {/* Add Currency Selection Field */}
-                    <FormField
-                      control={form.control}
-                      name="currency"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="shad-form_label">Currency</FormLabel>
-                          <FormControl>
-                            <select
-                              {...field}
-                              onChange={(e) => {
-                                field.onChange(e);
-                                setSelectedCurrency(e.target.value);
-                              }}
-                              className="shad-input">
-                              <option value="USD">USD</option>
-                              <option value="EUR">EUR</option>
-                              <option value="GBP">GBP</option>
-                              {/* Add more currency options as needed */}
-                            </select>
-                          </FormControl>
-                          <FormMessage className="shad-form_message" />
-                        </FormItem>
-                      )}
-                    /> 
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="shad-form_label">Currency</FormLabel>
+                        <FormControl>
+                          <select
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e);
+                              setSelectedCurrency(e.target.value);
+                            }}
+                            className="shad-input"
+                          >
+                            {currencies.map((currency) => (
+                              <option key={currency.code} value={currency.code}>
+                                {currency.code} - {currency.name}
+                              </option>
+                            ))}
+                          </select>
+                        </FormControl>
+                        <FormMessage className="shad-form_message" />
+                      </FormItem>
+                    )}
+                  />
 
-                  {/* Paid By Field (Assuming a select dropdown, replace it with your logic) */}
-                  {/* Add your logic for selecting the user */}
                   <div className="flex gap-4">
                     <FormField
                       control={form.control}
                       name="paidBy"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="shad-form_label mr-2">
-                            Paid By
-                          </FormLabel>
+                          <FormLabel className="shad-form_label mr-2">Paid By</FormLabel>
                           <FormControl>
-                            {/* Dropdown for selecting members */}
                             <select
                               className="shad-input rounded"
                               {...field}
                               value={selectedPaidBy}
-                              onChange={handlePaidByChange}>
+                              onChange={handlePaidByChange}
+                            >
                               {GroupData?.Members?.map(
                                 (member: { $id: string; name: string }) => (
                                   <option key={member.$id} value={member.$id}>
@@ -227,25 +227,23 @@ const AddExpense = () => {
                       <span className="shad-form_label mr-2">Split In</span>
                       <div
                         style={{ maxHeight: "100px", overflowY: "auto" }}
-                        className="custom-scrollbar">
+                        className="custom-scrollbar"
+                      >
                         {GroupData?.Members?.map((member: any) => (
                           <div key={member.$id}>
                             <ul className="p-1 m-1 w-48 text-sm font-medium text-gray-900 bg-gray-600 border border-gray-600 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                               <li className="w-full border-b border-gray-600 rounded-t-lg dark:border-gray-600">
                                 <label
                                   className="w-full py-1 ms-2 text-sm font-medium text-white dark:text-gray-300 flex items-center"
-                                  htmlFor={member.$id}>
+                                  htmlFor={member.$id}
+                                >
                                   <input
                                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500"
                                     type="checkbox"
                                     id={member.$id}
                                     value={member.$id}
-                                    checked={selectedMembers.includes(
-                                      member.$id
-                                    )}
-                                    onChange={() =>
-                                      handleMemberCheckboxChange(member.$id)
-                                    }
+                                    checked={selectedMembers.includes(member.$id)}
+                                    onChange={() => handleMemberCheckboxChange(member.$id)}
                                   />
                                   <span className="ml-2">{member.name}</span>
                                 </label>
@@ -262,20 +260,20 @@ const AddExpense = () => {
                     </div>
                   </div>
 
-                  {/* Split Member Field */}
-
                   <div className="flex gap-4 items-center justify-end">
                     <Button
                       type="button"
                       className="shad-button_dark_4"
-                      onClick={() => navigate(-1)}>
+                      onClick={() => navigate(-1)}
+                    >
                       Cancel
                     </Button>
                     <Button
                       type="submit"
                       style={{ backgroundColor: "#1CC29F" }}
                       className="whitespace-nowrap"
-                      disabled={isLoadingCreate}>
+                      disabled={isLoadingCreate}
+                    >
                       {isLoadingCreate && <Loader />}
                       Add Expense
                     </Button>

@@ -119,3 +119,15 @@ export async function addMember(newMemberArray: string[], groupDocId: any) {
     throw error;
   }
 }
+
+export const convertCurrency = async (amount: number, from: string, to: string): Promise<number> => {
+  try {
+    const response = await fetch(`https://api.exchangerate-api.com/v4/latest/${from}`);
+    const data = await response.json();
+    const rate = data.rates[to];
+    return amount * rate;
+  } catch (error) {
+    console.error("Error converting currency:", error);
+    return amount; // Return original amount if conversion fails
+  }
+};
