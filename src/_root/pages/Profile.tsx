@@ -7,10 +7,23 @@ import Profilephoto from "@/components/shared/Profilephoto";
 import { useUserContext, INITIAL_USER } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { currencies } from "@/constants";
+
 const Profile = () => {
   const { mutate: signOut } = useSignOutAccount();
   const navigate = useNavigate();
   const { setUser, setIsAuthenticated } = useUserContext();
+  const { data: currentUser } = useGetCurrentUser();
+
+  const [isDebtNotificationEnabled, setIsDebtNotificationEnabled] = useState(false);
+  const [debtThreshold, setDebtThreshold] = useState(50);
+  const [maxDebtThreshold] = useState(500);
+  const [isEditingThreshold, setIsEditingThreshold] = useState(false);
+  const [] = useState(false);
+  const [tempThreshold, setTempThreshold] = useState(debtThreshold);
+  const [] = useState(maxDebtThreshold);
+  const [selectedCurrency, setSelectedCurrency] = useState("USD");
+
   const handleSignOut = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
@@ -20,18 +33,14 @@ const Profile = () => {
     setUser(INITIAL_USER);
     navigate("/sign-in");
   };
-  const [debtThreshold, setDebtThreshold] = useState(50); // Default threshold of $50
-  const { data: currentUser } = useGetCurrentUser();
-  const [isDebtNotificationEnabled, setIsDebtNotificationEnabled] = useState(false);
-const [isEditingThreshold, setIsEditingThreshold] = useState(false);
-const [tempThreshold, setTempThreshold] = useState(debtThreshold);
-  const [] = useState(500); // Default max threshold of $500
+
   if (!currentUser)
     return (
       <div className="flex-center w-full h-full">
         <Loader />
       </div>
     );
+
   return (
     <div className="common-container">
       <div className="user-container">
@@ -65,6 +74,7 @@ const [tempThreshold, setTempThreshold] = useState(debtThreshold);
             <button className="bg-green-500 font-semibold text-white px-4 py-2 rounded-md">
               Contact
             </button>
+
             {/* Debt Notification Toggle */}
             <div className="mt-4">
               <label className="flex items-center cursor-pointer">
@@ -81,48 +91,70 @@ const [tempThreshold, setTempThreshold] = useState(debtThreshold);
             {/* Debt Threshold Settings */}
             {isDebtNotificationEnabled && (
               <>
-              <div className="mt-4 flex gap-4">
-                <label className="block mt-2">Debt Notification Threshold:</label>
-                <div className="flex items-center">
-                  {isEditingThreshold ? (
-                    <input
-                      type="number"
-                      min="0"
-                      value={tempThreshold}
-                      onChange={(e) => setTempThreshold(Number(e.target.value))}
-                      className="w-24 px-3 py-2 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
-                    />
-                  ) : (
-                    <span className="text-white text-md font-semibold mr-2">
-                      ${debtThreshold}
-                    </span>
-                  )}
-                  {isEditingThreshold ? (
-                    <button
-                      onClick={() => {
-                        setDebtThreshold(tempThreshold);
-                        setIsEditingThreshold(false);
-                      }}
-                      className="bg-green-500 text-white px-4 py-2 rounded-md"
-                    >
-                      Save
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => setIsEditingThreshold(true)}
-                      className="bg-blue-500 text-white px-4 py-2 rounded-md"
-                    >
-                      Edit
-                    </button>
-                  )}
+                <div className="mt-4 flex gap-4">
+                  <label className="block mt-2">Debt Notification Threshold:</label>
+                  <div className="flex items-center">
+                    {isEditingThreshold ? (
+                      <input
+                        type="number"
+                        min="0"
+                        max={maxDebtThreshold}
+                        value={tempThreshold}
+                        onChange={(e) => setTempThreshold(Number(e.target.value))}
+                        className="w-24 px-3 py-2 text-white bg-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mr-2"
+                      />
+                    ) : (
+                      <span className="text-white text-md font-semibold mr-2">
+                        ${debtThreshold}
+                      </span>
+                    )}
+                    {isEditingThreshold ? (
+                      <button
+                        onClick={() => {
+                          setDebtThreshold(tempThreshold);
+                          setIsEditingThreshold(false);
+                        }}
+                        className="bg-green-500 text-white px-4 py-2 rounded-md"
+                      >
+                        Save
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => setIsEditingThreshold(true)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </div>
                 </div>
-               
-              </div>
-              <p className="mt-2 text-sm text-gray-300">
-               You'll be notified when a friend's debt exceeds ${debtThreshold}
-             </p>
-             </>
+                <p className="mt-2 text-sm text-gray-300">
+                  You'll be notified when a friend's debt exceeds ${debtThreshold}
+                </p>
+
+                
+              </>
             )}
+
+            {/* Currency Selection Dropdown */}
+            <div className="mt-4 flex gap-4 items-center">
+              <label className="block">Preferred Currency:</label>
+              <select
+                value={selectedCurrency}
+                onChange={(e) => setSelectedCurrency(e.target.value)}
+                className="bg-gray-700 text-white px-3 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                {currencies.map((currency) => (
+                  <option key={currency.code} value={currency.code}>
+                    {currency.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <p className="mt-2 text-sm text-gray-300">
+              Your balance will be displayed in {selectedCurrency}
+            </p>
           </section>
           
           <section className="mt-6">
