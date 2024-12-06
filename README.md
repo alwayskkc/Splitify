@@ -1,9 +1,5 @@
 # Splitify - Expense Sharing Made Easy
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/b44a514e-0a41-4f09-8786-fc529ed51cf9" alt="Splitify Banner"/>
-</p>
-
 ## About Splitify
 
 Splitify is a modern expense-sharing application built with React, TypeScript, and Vite. It's designed to simplify the process of managing shared expenses among friends, roommates, or any group. With Splitify, you can easily track expenses, split bills, and settle debts.
