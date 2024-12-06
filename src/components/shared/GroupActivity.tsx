@@ -134,7 +134,7 @@ const GroupActivity = ({ activity }: UserCardProps) => {
     }
   } else if (isCurrentUserInvolved) {
     userAmount = -individualAmount;
-    amountMessage = `You owe ${activity.Currency} ${Math.abs(userAmount).toFixed(2)}`;
+    amountMessage = `You owe ${"USD"} ${Math.abs(userAmount).toFixed(2)}`;
   } else {
     amountMessage = `Not involved`;
   }
