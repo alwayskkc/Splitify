@@ -326,7 +326,23 @@ export async function getGroupById(groupId: string) {
     return null;
   }
 }
-
+export async function updateUser(user: { userId: string; pointsEarned: number }) {
+  try {
+    const updatedUser = await databases.updateDocument(
+      appwriteConfig.databaseId,
+      appwriteConfig.userCollectionId,
+      user.userId,
+      { pointsEarned: user.pointsEarned }
+    );
+    if (!updatedUser) {
+      throw Error;
+    }
+    return updatedUser;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    throw error;
+  }
+}
 export async function getGroupsActivityById(groups: string[]) {
   try {
     if (!groups || !Array.isArray(groups) || groups.length === 0) {

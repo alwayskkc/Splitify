@@ -1,12 +1,13 @@
 import {
   useGetCurrentUser,
   useSignOutAccount,
+  useUpdateUser
 } from "@/lib/react-query/queries";
 import { Loader } from "@/components/shared";
 import Profilephoto from "@/components/shared/Profilephoto";
 import { useUserContext, INITIAL_USER } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { currencies } from "@/constants";
 
 const Profile = () => {
@@ -24,15 +25,26 @@ const Profile = () => {
   const [] = useState(maxDebtThreshold);
   const [selectedCurrency, setSelectedCurrency] = useState("USD");
 
+  const [pointsEarned, setPointsEarned] = useState(0);
+  useUpdateUser();
+
+  useEffect(() => {
+    if (currentUser) {
+      setPointsEarned(currentUser.pointsEarned || 0);
+    }
+  }, [currentUser]);
+
   const handleSignOut = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ) => {
     e.preventDefault();
     signOut();
     setIsAuthenticated(false);
-    setUser(INITIAL_USER);
+    setUser({ ...INITIAL_USER, pointsEarned: 0 });
     navigate("/sign-in");
   };
+
+
 
   if (!currentUser)
     return (
@@ -75,6 +87,19 @@ const Profile = () => {
               Contact
             </button>
 
+            <div className="flex items-center">
+            <p><strong>Points Earned:</strong> {pointsEarned || 0}</p>
+            {(pointsEarned || 0) < 100 && (
+              <span className="ml-2 text-sm text-yellow-500">
+                {"["} Free access to Premium features when you score 100 points or above. Keep earning points 🙌 {"]"}
+              </span>
+            )}
+            {(pointsEarned || 0) >= 100 && (
+              <span className="ml-2 text-sm text-green-500">
+                Congratulations! You have access to Premium features
+              </span>
+            )}
+          </div>
             {/* Debt Notification Toggle */}
             <div className="mt-4">
               <label className="flex items-center cursor-pointer">

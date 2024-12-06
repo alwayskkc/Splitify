@@ -135,7 +135,7 @@ const UserCard: React.FC<UserCardProps> = ({
               src="/assets/icons/upi.png"
               alt="paytm"
             />
-            Pay with UPI
+            Pay with Zelle/Venmo
           </Button>
           <Button className="m-2 flex items-center" onClick={toggleModal}>
             <img

@@ -8,7 +8,9 @@ import { useForm } from "react-hook-form";
 import Loader from "../shared/Loader";
 import TransactionDetail from "../shared/TransactionDetail";
 import { Models } from "appwrite";
-
+import { useUpdateUser } from "@/lib/react-query/queries";
+import { toast } from "@/components/ui/use-toast";
+import { IUser } from "@/types";
 const Settlement = () => {
   const form = useForm<ISettlement>({
     defaultValues: {
@@ -44,22 +46,67 @@ const Settlement = () => {
     useMakeSettlement();
 
   const [cashAmount, setCashAmount] = React.useState(Number(amount));
+  const { mutateAsync: updateUser } = useUpdateUser();
 
+  // const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   const formValues = form.getValues();
+  //   const newExpense = await makeSettlement({
+  //     ...formValues,
+  //     payerId: user.id!,
+  //     receiverId: receiverID!,
+  //     amount: cashAmount,
+  //   });
+
+  //   if (!newExpense) {
+  //     console.log("Recording cash amount:", cashAmount);
+  //   } else {
+      
+  //     navigate(-1);
+  //   }
+  //   console.log("Recording cash amount:", cashAmount);
+  // };
   const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formValues = form.getValues();
-    const newExpense = await makeSettlement({
-      ...formValues,
-      payerId: user.id!,
-      receiverId: receiverID!,
-      amount: cashAmount,
-    });
+    try {
+      const newExpense = await makeSettlement({
+        ...formValues,
+        payerId: user.id!,
+        receiverId: receiverID!,
+        amount: cashAmount,
+      });
 
-    if (!newExpense) {
-      console.log("Recording cash amount:", cashAmount);
-    } else {
-      navigate(-1);
+      if (newExpense) {
+        // Update user's points
+        await updateUser({
+          userId: user.id,
+          pointsEarned: ((user as IUser).pointsEarned || 0) + 1,
+        });
+
+        toast({
+          title: "Settlement Successful",
+          description: "You've settled the balance and earned 1 point!",
+        });
+
+        navigate(-1);
+      } else {
+        console.log("Failed to record settlement");
+        toast({
+          title: "Settlement Failed",
+          description: "Unable to record the settlement. Please try again.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Error during settlement:", error);
+      toast({
+        title: "Settlement Error",
+        description: "An error occurred during settlement. Please try again.",
+        variant: "destructive",
+      });
     }
+
     console.log("Recording cash amount:", cashAmount);
   };
 

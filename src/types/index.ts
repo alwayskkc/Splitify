@@ -60,6 +60,7 @@ export type IUser = {
   email: string;
   group: string;
   list: string;
+  pointsEarned: number; // Add this line
 };
 
 export type INewUser = {

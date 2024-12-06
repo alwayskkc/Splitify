@@ -23,6 +23,7 @@ import {
 } from "@/lib/appwrite/api";
 import { INewExpense, INewGroup, INewUser, ISettlement } from "@/types";
 import { useUserContext } from "@/context/AuthContext";
+import { updateUser } from "@/lib/appwrite/api"; // Make sure this function exists in your API file
 
 // ============================================================
 // AUTH QUERIES
@@ -33,7 +34,17 @@ export const useCreateUserAccount = () => {
     mutationFn: (user: INewUser) => createUserAccount(user),
   });
 };
-
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (user: { userId: string; pointsEarned: number }) => updateUser(user),
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [QUERY_KEYS.GET_CURRENT_USER],
+      });
+    },
+  });
+};
 export const useSignInAccount = () => {
   return useMutation({
     mutationFn: (user: { email: string; password: string }) =>

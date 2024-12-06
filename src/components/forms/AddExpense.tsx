@@ -20,6 +20,7 @@ import { useEffect, useState } from "react";
 import { useUserContext } from "@/context/AuthContext";
 import { currencies } from '@/constants';
 import { convertCurrency } from "@/lib/utils";
+import { updateUser } from "@/lib/appwrite/api";
 
 const AddExpense = () => {
   const { id } = useParams();
@@ -105,13 +106,29 @@ const AddExpense = () => {
           title: `Expense creation failed. Please try again.`,
         });
       } else {
-        toast({
-          title: "Expense Added Successfully.",
-          description: "Your expense has been added to the group.",
-        });
-        navigate(`/groups/${id}`);
+        try {
+          // Update user's points
+          await updateUser({
+            userId: user.id,
+            pointsEarned: (user.pointsEarned || 0) + 1,
+          });
+  
+          toast({
+            title: "Expense Added Successfully.",
+            description: "Your expense has been added to the group.",
+          });
+          navigate(`/groups/${id}`);
+        } catch (updateError) {
+          console.error("Error updating user points:", updateError);
+          // Still navigate and show success message, but log the points update error
+          toast({
+            title: "Expense Added Successfully.",
+            description: "Your expense has been added to the group, but there was an issue updating your points.",
+          });
+          navigate(`/groups/${id}`);
+        }
       }
-    } catch (error) {
+    }catch (error) {
       console.error("Error creating expense:", error);
       toast({
         title: "Error creating expense",
