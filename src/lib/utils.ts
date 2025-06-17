@@ -104,7 +104,7 @@ export async function loginaddFriend(
 
 export async function addMember(newMemberArray: string[], groupDocId: any) {
   try {
-    // Add the targetUserId to the current user's followings list
+    // Update a group's member list with the provided members
     const updatedMembers = await databases.updateDocument(
       appwriteConfig.databaseId,
       appwriteConfig.groupsCollectionId,
