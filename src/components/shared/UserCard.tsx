@@ -182,7 +182,7 @@ const UserCard: React.FC<UserCardProps> = ({
               repayment between two user
             </p>
             <Button className="btn bg-red hover:bg-red" onClick={toggleModal}>
-              Cancle
+              Cancel
             </Button>
             <Button className="btn m-2 bg-green-400" onClick={toggleModal}>
               Confirm

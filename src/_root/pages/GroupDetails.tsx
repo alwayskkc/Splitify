@@ -273,7 +273,7 @@ const GroupDetails = () => {
               If deleted, the Group expense will be permanently removed.
             </p>
             <Button className="btn bg-red hover:bg-red" onClick={toggleModal2}>
-              Cancle
+              Cancel
             </Button>
             <Button className="btn m-2 bg-green-400" onClick={handleDelete}>
               Confirm
